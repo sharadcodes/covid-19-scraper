@@ -7,7 +7,6 @@ const fetch = require("node-fetch");
 let files = [];
 let cdata = [];
 let pdata = [];
-let data = [];
 const app = express();
 
 const uri = process.env.MURL;
@@ -71,13 +70,15 @@ app.get("/", (req, res) => {
               collection.insertMany(pdata).then(d => {
                 pdata = [];
                 console.log("INSERT OK");
-                return res.json({ message: "Fucking awesome" });
               });
             }
           );
+        return res.json({ message: "Fucking awesome" });
       } else {
         current_file = files[files.length - 1];
         yesterday_file = files[files.length - 2];
+
+        // today
         csv()
           .fromStream(request.get(current_file.url))
           .subscribe(
@@ -86,16 +87,19 @@ app.get("/", (req, res) => {
             },
             () => {},
             () => {
-              const collection = client.db("COVID19").collection("daily");
+              const collection = client.db("COVID19").collection("today");
               collection.deleteMany({}, function(err, results) {
-                // console.log(results.result);
-                console.log("DELETE OK");
+                if (err) console.log(err);
+                console.log(results.result);
               });
-              collection.insertMany(cdata).then(d => {
-                console.log("INSERT OK");
+              collection.insertMany(cdata, function(err, results) {
+                if (err) console.log(err);
+                console.log(results.result);
+                cdata = [];
               });
             }
           );
+        // yesterday
         csv()
           .fromStream(request.get(yesterday_file.url))
           .subscribe(
@@ -104,18 +108,19 @@ app.get("/", (req, res) => {
             },
             () => {},
             () => {
-              const collection = client.db("COVID19").collection("previous");
+              const collection = client.db("COVID19").collection("yesterday");
               collection.deleteMany({}, function(err, results) {
-                console.log("DELETE OK");
-                // console.log(results.result);
+                if (err) console.log(err);
+                console.log(results.result);
               });
-              collection.insertMany(pdata).then(d => {
+              collection.insertMany(pdata, function(err, results) {
+                if (err) console.log(err);
+                console.log(results.result);
                 pdata = [];
-                console.log("INSERT OK");
-                return res.json({ message: "Fucking awesome" });
               });
             }
           );
+        return res.json({ message: "Fucking awesome" });
       }
     })
     .catch(err => console.log(err));
