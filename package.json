@@ -1,0 +1,20 @@
+{
+  "name": "covid-19-scrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csvtojson": "^2.0.10",
+    "express": "^4.17.1",
+    "mongodb": "^3.5.5",
+    "node-fetch": "^2.6.0",
+    "nodemon": "^2.0.2",
+    "request": "^2.88.2"
+  }
+}
